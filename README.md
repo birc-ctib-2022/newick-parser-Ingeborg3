@@ -1,3 +1,4 @@
+[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=9491327&assignment_repo_type=AssignmentRepo)
 # Parsing Newick trees
 
 The [Newick tree file format](https://en.wikipedia.org/wiki/Newick_format) represents trees in a text with nested parentheses. You can specify branch lengths and similar annotations, but here we will just assume that a tree is either a simple alpha-numeric string, which we consider a leaf, or it is a list of comma-separated trees surrounded by parentheses. Something like this:
