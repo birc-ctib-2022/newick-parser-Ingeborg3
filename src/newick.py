@@ -49,6 +49,37 @@ class Node:
 # A tree is either a leaf or an inner node with sub-trees
 Tree = Union[Leaf, Node]
 
+class EmptyStack(Exception):
+    pass
+
+# FIXME: hvordan tegne newick tree ((A,B), C, ((D,E), F))?
+
+class Stack(object):
+    """
+    Underlying data-structure is a python list.
+    """
+    def __init__(self):
+        self.stack = []
+    
+    def push(self, element):
+        self.stack.append(element)
+    
+    def get_top_element(self):
+        if len(self.stack) == 0: # could also use try-except block here as on p. 552.
+            raise EmptyStack()
+        return self.stack[-1]
+    
+    def pop(self):
+        if len(self.stack) == 0:
+            raise EmptyStack()
+        return self.stack.pop()
+
+    def empty(self):
+        return len(self.stack) == 0
+
+    def __bool__(self): 
+        return not self.empty
+
 
 def parse(tree: str) -> Tree:
     """
@@ -57,4 +88,50 @@ def parse(tree: str) -> Tree:
     >>> parse("(A, (B, C))")
     (A,(B,C))
     """
-    ...
+    stack = Stack()
+    tokens = tokenize(tree) # list of strings. 
+    for token in tokens:
+        if token == ')':
+            # pop until ( and make (sub)tree (by making a class call to
+            # Node() and give the leaf objects in a list as argument) 
+            # and push the (sub)tree back onto the top of the stack.
+            stack.push(token) 
+            leafs =[]
+            while True:
+                x = stack.pop()
+                if x == '(':
+                    break
+                elif x != ')': # if x is a leaf-object or a subtree
+                    # (Node) created in line 212. 
+                    leafs.append(x)
+            leafs.reverse() # reverse() method reverses the list but 
+            # returns None.
+            subtree = Node(leafs)
+            stack.push(subtree)
+
+        elif token == '(':
+            # push onto top of the stack.
+            stack.push(token)
+
+        else: # token is a string representation of a leaf.
+            # create Leaf object. Push onto the top of the stack.
+            stack.push(Leaf(token))
+    return stack.get_top_element()
+
+# How to make leaf
+print(Leaf('A')) # A
+# how to make node
+print(Node([Leaf('B'), Leaf('C')])) # (B, C)
+# how to make tree
+print(Node([Leaf('A'), Node([Leaf('B'), Leaf('C')])])) # (A, (B,C))
+# can also just make tree from list of strings
+print(Node(['A', 'B'])) # (A, B)
+
+# NB: reverse() method is in-place. It reverses the list
+# passed to it as argument and returns None. It does not return a new
+# copy of the list in reversed form. 
+lst = [1, 2]
+lst.reverse()
+print(lst)
+
+print(parse('(A, (B, C))'))
