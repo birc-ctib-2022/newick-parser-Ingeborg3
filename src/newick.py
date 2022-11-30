@@ -86,8 +86,7 @@ def parse(tree: str) -> Tree:
     Parse a string into a tree.
 
     >>> parse("(A, (B, C))")
-    (A, (B ,C)) # A, B and C are leafs. (B,C) is a subtree. (A, (B,C)) is
-    a tree.
+    (A,(B,C))
     """
     stack = Stack()
     tokens = tokenize(tree) # list of strings. 
@@ -105,8 +104,10 @@ def parse(tree: str) -> Tree:
                 elif x != ')': # if x is a leaf-object or a subtree
                     # (Node) created in line 212. 
                     leafs.append(x)
+            leafs.reverse() # reverse() method reverses the list but 
+            # returns None.
             subtree = Node(leafs)
-            stack.push(tree)
+            stack.push(subtree)
 
         elif token == '(':
             # push onto top of the stack.
@@ -125,3 +126,12 @@ print(Node([Leaf('B'), Leaf('C')])) # (B, C)
 print(Node([Leaf('A'), Node([Leaf('B'), Leaf('C')])])) # (A, (B,C))
 # can also just make tree from list of strings
 print(Node(['A', 'B'])) # (A, B)
+
+# NB: reverse() method is in-place. It reverses the list
+# passed to it as argument and returns None. It does not return a new
+# copy of the list in reversed form. 
+lst = [1, 2]
+lst.reverse()
+print(lst)
+
+print(parse('(A, (B, C))'))
